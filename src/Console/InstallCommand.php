@@ -35,7 +35,7 @@ class InstallCommand extends Command
         // Publish configuration
         $this->publishConfiguration();
         
-        // Menampilkan informasi penggunaan
+        // Show usage information
         $this->showUsageInformation();
 
         $this->info('Installation completed!');
@@ -57,15 +57,15 @@ class InstallCommand extends Command
     }
     
     /**
-     * Menampilkan informasi penggunaan package.
+     * Show usage information.
      */
     protected function showUsageInformation(): void
     {
-        $this->info('\nHow to use Laravel Gmail Unique:');
-        $this->line('  1. Add the HasNormalizedEmail trait to your User model:');
-        $this->line('     use Aliziodev\\GmailUnique\\Traits\\HasNormalizedEmail;');
-        $this->line('\n  2. That\'s it! Your Gmail emails will now be normalized during validation.');
-        $this->line('     This prevents duplicate accounts with email variations like:');
+        $this->info('How to use Laravel Gmail Unique:');
+        $this->line('1. Add the HasNormalizedEmail trait to your User model:');
+        $this->line('   use Aliziodev\\GmailUnique\\Traits\\HasNormalizedEmail;');
+        $this->line('2. That\'s it! Your Gmail emails will now be normalized during validation.');
+        $this->line('   This prevents duplicate accounts with email variations like:');
         $this->line('     - user@gmail.com');
         $this->line('     - u.s.e.r@gmail.com');
         $this->line('     - user+alias@gmail.com');
