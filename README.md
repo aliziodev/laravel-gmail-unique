@@ -1,4 +1,5 @@
 # Laravel Gmail Unique
+
 [![Packagist License](https://img.shields.io/badge/Licence-MIT-blue)](https://github.com/aliziodev/laravel-gmail-unique/blob/main/LICENSE)
 [![Latest Stable Version](https://img.shields.io/packagist/v/aliziodev/laravel-gmail-unique?label=Stable)](https://packagist.org/packages/aliziodev/laravel-gmail-unique)
 [![Total Downloads](https://img.shields.io/packagist/dt/aliziodev/laravel-gmail-unique.svg?label=Downloads)](https://packagist.org/packages/aliziodev/laravel-gmail-unique)
@@ -6,7 +7,6 @@
 [![Laravel Version](https://img.shields.io/badge/Laravel-10.x-red)](https://packagist.org/packages/aliziodev/laravel-gmail-unique)
 [![Laravel Version](https://img.shields.io/badge/Laravel-11.x-red)](https://packagist.org/packages/aliziodev/laravel-gmail-unique)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-red)](https://packagist.org/packages/aliziodev/laravel-gmail-unique)
-
 
 Laravel Gmail Unique is a package that normalizes Gmail addresses during validation to prevent duplicate user registrations with Gmail's dot variations and plus aliases. Gmail treats addresses like john.doe@gmail.com, johndoe@gmail.com, and john+alias@gmail.com as the same account, but standard validation treats them as different emails.
 
@@ -126,6 +126,7 @@ If you need more control, you can use the `GmailUniqueService` directly:
 namespace App\Http\Controllers;
 
 use Aliziodev\GmailUnique\Services\GmailUniqueService;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -139,10 +140,10 @@ class UserController extends Controller
     public function checkEmail($email)
     {
         // Normalize an email address
-        $normalized = $this->gmailService->normalizeEmail($email);
+        $normalized = $this->gmailService->normalize($email);
 
         // Check if a normalized version already exists
-        $isDuplicate = $this->gmailService->isDuplicate($email, $excludeId = null);
+        $isDuplicate = $this->gmailService->isDuplicate($email, User::class, $excludeId = null);
 
         return [
             'original' => $email,
@@ -159,21 +160,25 @@ You can also use the service in custom validation rules:
 
 ```php
 use Aliziodev\GmailUnique\Services\GmailUniqueService;
+use App\Models\User;
 
 // In a form request or controller
-$rules = [
-    'email' => [
-        'required',
-        'email',
-        function ($attribute, $value, $fail) {
-            $gmailService = app(GmailUniqueService::class);
-
-            if ($gmailService->isDuplicate($value)) {
-                $fail('This email address is already taken.');
-            }
-        },
-    ],
-];
+$validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $gmailService = app(GmailUniqueService::class);
+                    if ($gmailService->isDuplicate($value, User::class)) {
+                         $fail('This email address is already taken.');
+                    }
+                }
+            ],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
 ```
 
 ## Testing
