@@ -95,16 +95,17 @@ This package also provides a Facade for easier access to the Gmail Unique functi
 namespace App\Http\Controllers;
 
 use Aliziodev\GmailUnique\Facades\GmailUnique;
+use App\Models\User;
 
 class UserController extends Controller
 {
     public function checkEmail($email)
     {
         // Normalize an email address
-        $normalized = GmailUnique::normalizeEmail($email);
+        $normalized = GmailUnique::normalize($email);
 
         // Check if a normalized version already exists
-        $isDuplicate = GmailUnique::isDuplicate($email, $excludeId = null);
+        $isDuplicate = GmailUnique::isDuplicate($email, User::class, $excludeId = null);
 
         return [
             'original' => $email,
