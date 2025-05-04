@@ -22,35 +22,31 @@ use Aliziodev\GmailUnique\Services\GmailUniqueService;
  */
 trait HasNormalizedEmail
 {
-    /**
+   /**
      * Boot the trait
      * 
-     * Registers model event listeners for the creating and updating events
+     * Registers model event listeners for the saving event
      * to automatically validate email uniqueness with normalization.
      *
      * @return void
      */
     public static function bootHasNormalizedEmail()
     {
-        static::creating(function (Model $model) {
-            return static::handleEmailValidation($model);
-        });
-
-        static::updating(function (Model $model) {
+        static::saving(function (Model $model) {
             return static::handleEmailValidation($model);
         });
     }
 
     /**
-     * Handle the email normalization and uniqueness validation
+     * Handle the email uniqueness validation
      *
-     * This method is called during model creation and updates to:
+     * This method is called during model saving to:
      * 1. Skip validation if the model has no email attribute
-     * 2. Normalize the email address if it's from a Gmail domain
-     * 3. Check if the normalized email already exists in the database
-     * 4. Throw a ValidationException if a duplicate is found
+     * 2. Check if the normalized email already exists in the database
+     * 3. Throw a ValidationException if a duplicate is found
+     * 4. Preserve the original email format as entered by the user
      *
-     * @param Model $model The model being created or updated
+     * @param Model $model The model being saved
      * @return bool Returns true if validation passes
      * @throws ValidationException If a duplicate normalized email is found
      */
